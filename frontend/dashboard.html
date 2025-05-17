@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - MCP Auth Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">MCP<span>Auth</span></a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+        <li class="nav-item"><a href="agents.html" class="nav-link">Agents</a></li>
+        <li class="nav-item"><a href="delegations.html" class="nav-link">Delegations</a></li>
+        <li class="nav-item"><a href="#" id="logout-btn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <section class="main-content">
+    <div class="container">
+      <div id="alert-container"></div>
+      
+      <h1>Welcome, <span class="user-name">User</span>!</h1>
+      <p>This is your MCP Auth Platform dashboard. Manage your agents, delegations, and settings from here.</p>
+      
+      <!-- Stats Overview -->
+      <div class="dashboard-grid" style="margin-top: 2rem;">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-robot"></i></div>
+          <div class="stat-value" id="agent-count">0</div>
+          <div class="stat-label">Agents</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+          <div class="stat-value" id="delegation-count">0</div>
+          <div class="stat-label">Active Delegations</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-fingerprint"></i></div>
+          <div class="stat-value" id="verified-count">0</div>
+          <div class="stat-label">Verified Agents</div>
+        </div>
+      </div>
+      
+      <!-- Recent Activity -->
+      <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title">Recent Activity</h2>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Action</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="activity-log">
+              <tr>
+                <td colspan="3">No recent activity</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="agents.html" class="btn btn-primary" style="text-align: center;">
+              <i class="fas fa-robot" style="margin-right: 0.5rem;"></i> Manage Agents
+            </a>
+            <a href="delegations.html" class="btn btn-primary" style="text-align: center;">
+              <i class="fas fa-exchange-alt" style="margin-right: 0.5rem;"></i> Manage Delegations
+            </a>
+            <a href="create-agent.html" class="btn btn-primary" style="text-align: center;">
+              <i class="fas fa-plus" style="margin-right: 0.5rem;"></i> Create New Agent
+            </a>
+            <a href="profile.html" class="btn btn-primary" style="text-align: center;">
+              <i class="fas fa-user" style="margin-right: 0.5rem;"></i> Edit Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2025 MCP Auth Platform. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+        <li><a href="#" class="footer-link">Terms of Service</a></li>
+        <li><a href="#" class="footer-link">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is logged in
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      try {
+        // Load dashboard data
+        const agents = await getAgents();
+        const delegations = await getDelegations();
+        
+        // Update stats
+        document.getElementById('agent-count').textContent = agents.length;
+        document.getElementById('delegation-count').textContent = delegations.filter(d => d.is_active).length;
+        document.getElementById('verified-count').textContent = agents.filter(a => a.trust_level === 'verified').length;
+        
+        // Populate activity log (in a real app, this would come from an activity API)
+        const activityLog = document.getElementById('activity-log');
+        if (agents.length > 0 || delegations.length > 0) {
+          activityLog.innerHTML = '';
+          
+          // Add some mock activities based on actual data
+          if (agents.length > 0) {
+            const agent = agents[0];
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${new Date(agent.created_at).toLocaleString()}</td>
+              <td>Agent Created</td>
+              <td>Agent "${agent.instance_id}" was created</td>
+            `;
+            activityLog.appendChild(row);
+          }
+          
+          if (delegations.length > 0) {
+            const delegation = delegations[0];
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${new Date(delegation.delegated_at).toLocaleString()}</td>
+              <td>Delegation Created</td>
+              <td>Delegation for purpose "${delegation.purpose || 'No purpose'}" was created</td>
+            `;
+            activityLog.appendChild(row);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        showAlert('Error loading dashboard data');
+      }
+    });
+  </script>
+</body>
+</html>

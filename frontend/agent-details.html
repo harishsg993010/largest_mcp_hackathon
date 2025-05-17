@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Details - MCP Auth Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">MCP<span>Auth</span></a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li class="nav-item"><a href="agents.html" class="nav-link active">Agents</a></li>
+        <li class="nav-item"><a href="delegations.html" class="nav-link">Delegations</a></li>
+        <li class="nav-item auth-required"><a href="#" id="logout-btn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <section class="main-content">
+    <div class="container">
+      <div id="alert-container"></div>
+      
+      <div class="page-header">
+        <h1>Agent Details</h1>
+        <div class="actions">
+          <a href="agents.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Agents</a>
+        </div>
+      </div>
+      
+      <div class="loading" id="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i> Loading agent details...
+      </div>
+      
+      <div id="agent-details" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Basic Information</h2>
+          </div>
+          <div class="card-body">
+            <div class="detail-row">
+              <div class="detail-label">ID:</div>
+              <div class="detail-value" id="agent-id"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Instance ID:</div>
+              <div class="detail-value" id="agent-instance-id"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Type:</div>
+              <div class="detail-value" id="agent-type"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Model:</div>
+              <div class="detail-value" id="agent-model"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Version:</div>
+              <div class="detail-value" id="agent-version"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Provider:</div>
+              <div class="detail-value" id="agent-provider"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Trust Level:</div>
+              <div class="detail-value" id="agent-trust-level"></div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Created:</div>
+              <div class="detail-value" id="agent-created"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card mt-4">
+          <div class="card-header">
+            <h2 class="card-title">Capabilities</h2>
+          </div>
+          <div class="card-body">
+            <ul id="agent-capabilities" class="capabilities-list">
+              <li class="empty-message">No capabilities defined</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card mt-4">
+          <div class="card-header">
+            <h2 class="card-title">Attestations</h2>
+            <button class="btn btn-primary btn-sm" id="add-attestation-btn">Add Attestation</button>
+          </div>
+          <div class="card-body">
+            <div id="attestations-list">
+              <p class="empty-message">No attestations available</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card mt-4">
+          <div class="card-header">
+            <h2 class="card-title">Delegations</h2>
+          </div>
+          <div class="card-body">
+            <div id="delegations-list">
+              <p class="empty-message">No delegations available</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card mt-4">
+          <div class="card-header">
+            <h2 class="card-title">Generate Token</h2>
+          </div>
+          <div class="card-body">
+            <form id="token-form">
+              <div class="form-group">
+                <label for="token-scope" class="form-label">Scope (comma separated)</label>
+                <input type="text" id="token-scope" class="form-control" placeholder="e.g., read:resources,write:resources">
+              </div>
+              
+              <div class="form-group">
+                <label for="token-purpose" class="form-label">Purpose</label>
+                <input type="text" id="token-purpose" class="form-control" placeholder="e.g., Access MCP resources">
+              </div>
+              
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Token</button>
+              </div>
+            </form>
+            
+            <div id="token-result" style="display: none;">
+              <h3>Generated Token</h3>
+              <div class="code-block">
+                <pre id="token-value"></pre>
+                <button class="copy-btn" id="copy-token-btn"><i class="fas fa-copy"></i></button>
+              </div>
+              
+              <h3>Token Information</h3>
+              <div class="detail-row">
+                <div class="detail-label">Token Type:</div>
+                <div class="detail-value" id="token-type"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Expires In:</div>
+                <div class="detail-value" id="token-expires"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Delegation ID:</div>
+                <div class="detail-value" id="token-delegation-id"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="actions-container mt-4">
+          <button class="btn btn-danger" id="delete-agent-btn">Delete Agent</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2025 MCP Auth Platform. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+        <li><a href="#" class="footer-link">Terms of Service</a></li>
+        <li><a href="#" class="footer-link">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Add Attestation Modal -->
+  <div id="add-attestation-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Add Attestation</h2>
+      <form id="add-attestation-form">
+        <div class="form-group">
+          <label for="attestation-type" class="form-label">Attestation Type</label>
+          <select id="attestation-type" class="form-control" required>
+            <option value="identity">Identity</option>
+            <option value="capability">Capability</option>
+            <option value="trust">Trust</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="attestation-token" class="form-label">Attestation Token</label>
+          <textarea id="attestation-token" class="form-control" rows="5" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit Attestation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/main.js"></script>
+  <script src="js/agents.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is logged in
+      if (!localStorage.getItem('access_token')) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Get agent ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const agentId = urlParams.get('id');
+      
+      if (!agentId) {
+        showAlert('No agent ID provided', 'danger');
+        setTimeout(() => {
+          window.location.href = 'agents.html';
+        }, 2000);
+        return;
+      }
+      
+      // Show loading indicator
+      document.getElementById('loading-indicator').style.display = 'block';
+      document.getElementById('agent-details').style.display = 'none';
+      
+      // Load agent details
+      try {
+        console.log(`Loading agent details for ID: ${agentId}`);
+        
+        // Direct fetch to bypass any caching issues
+        const response = await fetch(`http://localhost:5000/api/agents/${agentId}/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to load agent: ${response.status} ${response.statusText}`);
+        }
+        
+        const agent = await response.json();
+        console.log('Agent data loaded:', agent);
+        
+        // Display agent details
+        displayAgentDetails(agent);
+        
+        // Load attestations
+        try {
+          const attestResponse = await fetch(`http://localhost:5000/api/attestation/agent/${agentId}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+          });
+          
+          if (attestResponse.ok) {
+            const attestations = await attestResponse.json();
+            displayAttestations(attestations);
+          } else {
+            console.warn('Failed to load attestations, but continuing');
+            displayAttestations([]);
+          }
+        } catch (attestError) {
+          console.error('Error loading attestations:', attestError);
+          displayAttestations([]);
+        }
+        
+        // Load delegations
+        try {
+          const delegResponse = await fetch(`http://localhost:5000/api/delegation/?delegatee_id=${agentId}&delegatee_type=agent`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+          });
+          
+          if (delegResponse.ok) {
+            const delegations = await delegResponse.json();
+            displayDelegations(delegations);
+          } else {
+            console.warn('Failed to load delegations, but continuing');
+            displayDelegations([]);
+          }
+        } catch (delegError) {
+          console.error('Error loading delegations:', delegError);
+          displayDelegations([]);
+        }
+      } catch (error) {
+        console.error('Error loading agent details:', error);
+        showAlert(`Failed to load agent details: ${error.message}`, 'danger');
+        document.getElementById('loading-indicator').style.display = 'none';
+      }
+      
+      // Set up token form
+      const tokenForm = document.getElementById('token-form');
+      if (tokenForm) {
+        tokenForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          console.log('Token form submitted');
+          
+          // Show loading message
+          showAlert('Generating token...', 'info');
+          
+          const tokenData = {
+            scope: document.getElementById('token-scope').value.split(',').map(s => s.trim()),
+            purpose: document.getElementById('token-purpose').value
+          };
+          
+          console.log('Token request data:', tokenData);
+          
+          try {
+            console.log('Submitting token request with data:', tokenData);
+            
+            // Try both with and without trailing slash
+            let response;
+            try {
+              // First try with trailing slash
+              response = await fetch(`http://localhost:5000/api/agents/${agentId}/token/`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify(tokenData)
+              });
+            } catch (firstError) {
+              console.warn('First attempt failed, trying without trailing slash:', firstError);
+              // If that fails, try without trailing slash
+              response = await fetch(`http://localhost:5000/api/agents/${agentId}/token`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify(tokenData)
+              });
+            }
+            
+            console.log('Token response status:', response.status);
+            
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Token error response:', errorText);
+              throw new Error(`Failed to generate token: ${response.status} ${response.statusText}`);
+            }
+            
+            const tokenResponse = await response.json();
+            console.log('Token generated successfully:', tokenResponse);
+            
+            displayTokenResult(tokenResponse);
+            showAlert('Token generated successfully!', 'success');
+          } catch (error) {
+            console.error('Token generation error:', error);
+            showAlert(`Failed to generate token: ${error.message}`, 'danger');
+          }
+        });
+      }
+      
+      // Set up copy token button
+      const copyTokenBtn = document.getElementById('copy-token-btn');
+      if (copyTokenBtn) {
+        copyTokenBtn.addEventListener('click', () => {
+          const tokenValue = document.getElementById('token-value').textContent;
+          navigator.clipboard.writeText(tokenValue).then(() => {
+            showAlert('Token copied to clipboard', 'success');
+          });
+        });
+      }
+      
+      // Set up delete agent button
+      const deleteAgentBtn = document.getElementById('delete-agent-btn');
+      if (deleteAgentBtn) {
+        deleteAgentBtn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to delete this agent? This action cannot be undone.')) {
+            try {
+              await apiRequest(`/agents/${agentId}`, 'DELETE');
+              showAlert('Agent deleted successfully', 'success');
+              setTimeout(() => {
+                window.location.href = 'agents.html';
+              }, 2000);
+            } catch (error) {
+              showAlert(`Failed to delete agent: ${error.message}`, 'danger');
+            }
+          }
+        });
+      }
+      
+      // Set up add attestation modal
+      const addAttestationBtn = document.getElementById('add-attestation-btn');
+      const addAttestationModal = document.getElementById('add-attestation-modal');
+      const addAttestationForm = document.getElementById('add-attestation-form');
+      
+      if (addAttestationBtn && addAttestationModal) {
+        addAttestationBtn.addEventListener('click', () => {
+          addAttestationModal.style.display = 'block';
+        });
+        
+        // Close modal when clicking on the close button
+        const closeBtn = addAttestationModal.querySelector('.close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            addAttestationModal.style.display = 'none';
+          });
+        }
+        
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', (e) => {
+          if (e.target === addAttestationModal) {
+            addAttestationModal.style.display = 'none';
+          }
+        });
+        
+        // Handle attestation form submission
+        if (addAttestationForm) {
+          addAttestationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const attestationData = {
+              agent_id: agentId,
+              attestation_type: document.getElementById('attestation-type').value,
+              token: document.getElementById('attestation-token').value
+            };
+            
+            try {
+              await apiRequest('/attestation', 'POST', attestationData);
+              showAlert('Attestation added successfully', 'success');
+              addAttestationModal.style.display = 'none';
+              
+              // Reload attestations
+              const attestations = await apiRequest(`/attestation/agent/${agentId}`);
+              displayAttestations(attestations);
+            } catch (error) {
+              showAlert(`Failed to add attestation: ${error.message}`, 'danger');
+            }
+          });
+        }
+      }
+    });
+    
+    // Display agent details
+    function displayAgentDetails(agent) {
+      document.getElementById('loading-indicator').style.display = 'none';
+      document.getElementById('agent-details').style.display = 'block';
+      
+      // Set basic information
+      document.getElementById('agent-id').textContent = agent.id;
+      document.getElementById('agent-instance-id').textContent = agent.instance_id;
+      document.getElementById('agent-type').textContent = agent.agent_type;
+      document.getElementById('agent-model').textContent = agent.agent_model;
+      document.getElementById('agent-version').textContent = agent.agent_version || 'N/A';
+      document.getElementById('agent-provider').textContent = agent.agent_provider;
+      document.getElementById('agent-trust-level').textContent = agent.trust_level || 'unverified';
+      document.getElementById('agent-created').textContent = new Date(agent.created_at).toLocaleString();
+      
+      // Set capabilities
+      const capabilitiesList = document.getElementById('agent-capabilities');
+      if (agent.capabilities && agent.capabilities.length > 0) {
+        capabilitiesList.innerHTML = '';
+        agent.capabilities.forEach(capability => {
+          const li = document.createElement('li');
+          li.textContent = capability;
+          capabilitiesList.appendChild(li);
+        });
+      }
+    }
+    
+    // Display attestations
+    function displayAttestations(attestations) {
+      const attestationsList = document.getElementById('attestations-list');
+      
+      if (!attestations || attestations.length === 0) {
+        attestationsList.innerHTML = '<p class="empty-message">No attestations available</p>';
+        return;
+      }
+      
+      attestationsList.innerHTML = '';
+      
+      attestations.forEach(attestation => {
+        const attestationCard = document.createElement('div');
+        attestationCard.className = 'attestation-card';
+        
+        const status = attestation.verified ? 
+          '<span class="status verified">Verified</span>' : 
+          '<span class="status unverified">Unverified</span>';
+        
+        attestationCard.innerHTML = `
+          <div class="attestation-header">
+            <h3>${attestation.attestation_type} Attestation</h3>
+            ${status}
+          </div>
+          <div class="attestation-body">
+            <div class="detail-row">
+              <div class="detail-label">ID:</div>
+              <div class="detail-value">${attestation.id}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Format:</div>
+              <div class="detail-value">${attestation.format}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Created:</div>
+              <div class="detail-value">${new Date(attestation.timestamp).toLocaleString()}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Token:</div>
+              <div class="detail-value token-preview">${attestation.token.substring(0, 50)}...</div>
+            </div>
+          </div>
+          <div class="attestation-actions">
+            <button class="btn btn-primary btn-sm verify-btn" data-id="${attestation.id}">Verify</button>
+            <button class="btn btn-danger btn-sm delete-btn" data-id="${attestation.id}">Delete</button>
+          </div>
+        `;
+        
+        attestationsList.appendChild(attestationCard);
+      });
+      
+      // Add event listeners for verify and delete buttons
+      attestationsList.querySelectorAll('.verify-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const attestationId = btn.getAttribute('data-id');
+          try {
+            await apiRequest(`/attestation/${attestationId}/verify`, 'POST');
+            showAlert('Attestation verified successfully', 'success');
+            
+            // Reload attestations
+            const agentId = new URLSearchParams(window.location.search).get('id');
+            const attestations = await apiRequest(`/attestation/agent/${agentId}`);
+            displayAttestations(attestations);
+          } catch (error) {
+            showAlert(`Failed to verify attestation: ${error.message}`, 'danger');
+          }
+        });
+      });
+      
+      attestationsList.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to delete this attestation?')) {
+            const attestationId = btn.getAttribute('data-id');
+            try {
+              await apiRequest(`/attestation/${attestationId}`, 'DELETE');
+              showAlert('Attestation deleted successfully', 'success');
+              
+              // Reload attestations
+              const agentId = new URLSearchParams(window.location.search).get('id');
+              const attestations = await apiRequest(`/attestation/agent/${agentId}`);
+              displayAttestations(attestations);
+            } catch (error) {
+              showAlert(`Failed to delete attestation: ${error.message}`, 'danger');
+            }
+          }
+        });
+      });
+    }
+    
+    // Display delegations
+    function displayDelegations(delegations) {
+      const delegationsList = document.getElementById('delegations-list');
+      
+      if (!delegations || delegations.length === 0) {
+        delegationsList.innerHTML = '<p class="empty-message">No delegations available</p>';
+        return;
+      }
+      
+      delegationsList.innerHTML = '';
+      
+      delegations.forEach(delegation => {
+        const delegationCard = document.createElement('div');
+        delegationCard.className = 'delegation-card';
+        
+        const status = delegation.is_active ? 
+          '<span class="status active">Active</span>' : 
+          '<span class="status inactive">Inactive</span>';
+        
+        delegationCard.innerHTML = `
+          <div class="delegation-header">
+            <h3>Delegation #${delegation.id.substring(0, 8)}</h3>
+            ${status}
+          </div>
+          <div class="delegation-body">
+            <div class="detail-row">
+              <div class="detail-label">Delegator:</div>
+              <div class="detail-value">${delegation.delegator_type === 'user' ? 'User' : 'Agent'} (${delegation.delegator_id})</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Scope:</div>
+              <div class="detail-value">${delegation.scope.join(', ')}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Purpose:</div>
+              <div class="detail-value">${delegation.purpose || 'N/A'}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Created:</div>
+              <div class="detail-value">${new Date(delegation.delegated_at).toLocaleString()}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Expires:</div>
+              <div class="detail-value">${new Date(delegation.expires_at).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="delegation-actions">
+            <button class="btn btn-danger btn-sm revoke-btn" data-id="${delegation.id}">Revoke</button>
+          </div>
+        `;
+        
+        delegationsList.appendChild(delegationCard);
+      });
+      
+      // Add event listeners for revoke buttons
+      delegationsList.querySelectorAll('.revoke-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to revoke this delegation?')) {
+            const delegationId = btn.getAttribute('data-id');
+            try {
+              await apiRequest(`/delegation/${delegationId}/revoke`, 'POST');
+              showAlert('Delegation revoked successfully', 'success');
+              
+              // Reload delegations
+              const agentId = new URLSearchParams(window.location.search).get('id');
+              const delegations = await apiRequest(`/delegation?delegatee_id=${agentId}&delegatee_type=agent`);
+              displayDelegations(delegations);
+            } catch (error) {
+              showAlert(`Failed to revoke delegation: ${error.message}`, 'danger');
+            }
+          }
+        });
+      });
+    }
+    
+    // Display token result
+    function displayTokenResult(tokenResponse) {
+      const tokenResult = document.getElementById('token-result');
+      tokenResult.style.display = 'block';
+      
+      // Scroll to the token result section
+      tokenResult.scrollIntoView({ behavior: 'smooth' });
+      
+      // Set token information
+      document.getElementById('token-value').textContent = tokenResponse.access_token;
+      document.getElementById('token-type').textContent = tokenResponse.token_type || 'Bearer';
+      document.getElementById('token-expires').textContent = tokenResponse.expires_in ? 
+        `${tokenResponse.expires_in} seconds` : '3600 seconds (default)';
+      document.getElementById('token-delegation-id').textContent = tokenResponse.delegation_id || 'N/A';
+      
+      // Highlight the token for better visibility
+      const tokenValue = document.getElementById('token-value');
+      tokenValue.style.backgroundColor = '#f0f8ff';
+      setTimeout(() => {
+        tokenValue.style.backgroundColor = '';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
