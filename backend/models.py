@@ -88,13 +88,12 @@ class Attestation(db.Model):
     
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     agent_id = db.Column(db.String(36), db.ForeignKey('agents.id'), nullable=False)
-    format = db.Column(db.String(100), nullable=False)
-    token = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    verified = db.Column(db.Boolean, default=False)
-    verification_timestamp = db.Column(db.DateTime)
+    format = db.Column(db.String(100), nullable=False)  # Format of attestation (e.g., TPM2-Quote)
+    token = db.Column(db.Text, nullable=False)  # Attestation token or evidence
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)  # When the attestation was created
+    verified = db.Column(db.Boolean, default=False)  # Whether the attestation has been verified
+    verification_timestamp = db.Column(db.DateTime, nullable=True)  # When the attestation was verified
     
-    # Relationships
     agent = db.relationship('Agent', back_populates='attestations')
     
     def to_dict(self):

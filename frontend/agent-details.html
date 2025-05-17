@@ -184,11 +184,11 @@
       <h2>Add Attestation</h2>
       <form id="add-attestation-form">
         <div class="form-group">
-          <label for="attestation-type" class="form-label">Attestation Type</label>
-          <select id="attestation-type" class="form-control" required>
-            <option value="identity">Identity</option>
-            <option value="capability">Capability</option>
-            <option value="trust">Trust</option>
+          <label for="attestation-format" class="form-label">Attestation Format</label>
+          <select id="attestation-format" class="form-control" required>
+            <option value="TPM2-Quote">TPM2-Quote</option>
+            <option value="SGX-Quote">SGX-Quote</option>
+            <option value="urn:ietf:params:oauth:token-type:eat">EAT Token</option>
           </select>
         </div>
         
@@ -429,7 +429,7 @@
             
             const attestationData = {
               agent_id: agentId,
-              attestation_type: document.getElementById('attestation-type').value,
+              format: document.getElementById('attestation-format').value,
               token: document.getElementById('attestation-token').value
             };
             
