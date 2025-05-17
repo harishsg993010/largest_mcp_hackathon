@@ -62,7 +62,11 @@ coverage.xml
 .ipynb_checkpoints
 
 # Local development
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# db
+mcp_auth_dev.db
