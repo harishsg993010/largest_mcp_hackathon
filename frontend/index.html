@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Auth Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">MCP<span>Auth</span></a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+        <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+        <li class="nav-item auth-hidden"><a href="login.html" class="btn-login">Login</a></li>
+        <li class="nav-item auth-required" style="display: none;"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li class="nav-item auth-required" style="display: none;"><a href="agents.html" class="nav-link">Agents</a></li>
+        <li class="nav-item auth-required" style="display: none;"><a href="delegations.html" class="nav-link">Delegations</a></li>
+        <li class="nav-item auth-required" style="display: none;"><a href="#" id="logout-btn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" style="background-color: var(--primary-color); color: white; padding: 4rem 0; text-align: center;">
+    <div class="container">
+      <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Secure Authentication for MCP Servers</h1>
+      <p style="font-size: 1.25rem; margin-bottom: 2rem;">An Okta-like authentication and authorization system implementing OpenID Connect for Agents (OIDC-A) 1.0 specification</p>
+      <div>
+        <a href="register.html" class="btn btn-primary" style="background-color: white; color: var(--primary-color); margin-right: 1rem;">Get Started</a>
+        <a href="#features" class="btn" style="background-color: transparent; color: white; border: 1px solid white;">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="main-content">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 2rem;">Key Features</h2>
+      
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+          <h3>User Authentication</h3>
+          <p>Secure authentication for human users with multi-factor support</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-robot"></i></div>
+          <h3>Agent Authentication</h3>
+          <p>OIDC-A 1.0 compliant authentication for AI agents</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-fingerprint"></i></div>
+          <h3>Agent Attestation</h3>
+          <p>Verify agent identity and integrity with cryptographic proof</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+          <h3>Delegation Chains</h3>
+          <p>Manage authority delegation between users and agents</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-cogs"></i></div>
+          <h3>Agent Capabilities</h3>
+          <p>Define and discover agent capabilities for fine-grained access control</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>OAuth 2.0 & OIDC</h3>
+          <p>Full compliance with OAuth 2.0 and OpenID Connect standards</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="main-content" style="background-color: #f8f9fa;">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 2rem;">About OIDC-A</h2>
+      
+      <div class="card">
+        <div class="card-body">
+          <p>OpenID Connect for Agents (OIDC-A) 1.0 is an extension to OpenID Connect Core 1.0 that provides a framework for representing, authenticating, and authorizing LLM-based agents within the OAuth 2.0 ecosystem.</p>
+          
+          <p>As LLM-based agents become increasingly prevalent in digital ecosystems, there is a growing need for standardized methods to represent their identity and manage their authorization. OIDC-A addresses these challenges by defining:</p>
+          
+          <ul style="margin-left: 2rem; margin-top: 1rem; margin-bottom: 1rem;">
+            <li>Standard claims for agent identity and capabilities</li>
+            <li>Mechanisms for agent attestation and verification</li>
+            <li>Protocols for delegation chains and authority management</li>
+            <li>Discovery mechanisms for agent capabilities</li>
+          </ul>
+          
+          <p>Our platform implements the full OIDC-A 1.0 specification, providing a secure and standardized way to integrate AI agents into your authentication ecosystem.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="main-content">
+    <div class="container" style="text-align: center;">
+      <h2 style="margin-bottom: 1rem;">Ready to Get Started?</h2>
+      <p style="margin-bottom: 2rem;">Create an account and start building your agent authentication system today.</p>
+      <a href="register.html" class="btn btn-primary">Sign Up Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2025 MCP Auth Platform. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+        <li><a href="#" class="footer-link">Terms of Service</a></li>
+        <li><a href="#" class="footer-link">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

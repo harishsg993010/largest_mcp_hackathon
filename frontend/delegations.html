@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Delegations - MCP Auth Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">MCP<span>Auth</span></a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li class="nav-item"><a href="agents.html" class="nav-link">Agents</a></li>
+        <li class="nav-item"><a href="delegations.html" class="nav-link active">Delegations</a></li>
+        <li class="nav-item"><a href="#" id="logout-btn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <section class="main-content">
+    <div class="container">
+      <div id="alert-container"></div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1>Manage Delegations</h1>
+        <button class="btn btn-primary" onclick="openModal('create-delegation-modal')">
+          <i class="fas fa-plus"></i> Create Delegation
+        </button>
+      </div>
+      
+      <!-- Delegations List -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Your Delegations</h2>
+        </div>
+        <div class="card-body">
+          <div id="delegations-list">
+            <p>Loading delegations...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Delegation Chains Info -->
+      <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title">About Delegation Chains</h2>
+        </div>
+        <div class="card-body">
+          <p>Delegation chains represent the sequence of authority delegation from the original user through potentially multiple agents. Each step in the chain includes:</p>
+          
+          <ul style="margin-left: 2rem; margin-top: 1rem; margin-bottom: 1rem;">
+            <li><strong>Delegator:</strong> The entity granting permission</li>
+            <li><strong>Delegatee:</strong> The agent receiving permission</li>
+            <li><strong>Scope:</strong> The permissions granted in this delegation step</li>
+            <li><strong>Purpose:</strong> The intended purpose of this delegation</li>
+            <li><strong>Constraints:</strong> Any limitations placed on the delegation</li>
+          </ul>
+          
+          <p>Each delegation step must satisfy these validation rules:</p>
+          
+          <ul style="margin-left: 2rem; margin-top: 1rem;">
+            <li>The scope in each step must be a subset of the delegator's available scopes</li>
+            <li>The chain must maintain chronological order</li>
+            <li>Each step must be properly authenticated and authorized</li>
+            <li>Constraints must be enforced throughout the chain</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Create Delegation Modal -->
+  <div id="create-delegation-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('create-delegation-modal')">&times;</span>
+      <h2>Create New Delegation</h2>
+      
+      <form id="create-delegation-form">
+        <div class="form-group">
+          <label for="delegatee-id" class="form-label">Delegatee Agent</label>
+          <select id="delegatee-id" class="form-control" required>
+            <option value="">Select Agent</option>
+            <!-- Will be populated dynamically -->
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="scope" class="form-label">Scope</label>
+          <input type="text" id="scope" class="form-control" required>
+          <small>Space-separated list of scopes (e.g., "email profile calendar")</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="purpose" class="form-label">Purpose</label>
+          <input type="text" id="purpose" class="form-control">
+          <small>Description of the purpose/intent for this delegation</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="expires-in" class="form-label">Expires In (hours)</label>
+          <input type="number" id="expires-in" class="form-control" value="1" min="1" max="720">
+          <small>How long this delegation should remain active</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="constraints" class="form-label">Constraints (JSON)</label>
+          <textarea id="constraints" class="form-control" rows="3"></textarea>
+          <small>JSON object of constraints (e.g., {"max_tokens": 1000, "allowed_tools": ["email"]})</small>
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary btn-block">Create Delegation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Delegation Details Modal -->
+  <div id="delegation-details-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('delegation-details-modal')">&times;</span>
+      <h2>Delegation Details</h2>
+      
+      <div id="delegation-details-content">
+        <!-- Will be populated dynamically -->
+      </div>
+      
+      <div id="delegation-chain-section" style="margin-top: 1.5rem;">
+        <h3>Delegation Chain</h3>
+        <div id="delegation-chain-content">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem; text-align: center;">
+        <button id="revoke-delegation-btn" class="btn btn-danger">Revoke Delegation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2025 MCP Auth Platform. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+        <li><a href="#" class="footer-link">Terms of Service</a></li>
+        <li><a href="#" class="footer-link">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/delegations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is logged in
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Load agents for delegatee dropdown
+      try {
+        const agents = await getAgents();
+        const delegateeSelect = document.getElementById('delegatee-id');
+        
+        if (delegateeSelect) {
+          // Clear existing options except the first one
+          while (delegateeSelect.options.length > 1) {
+            delegateeSelect.remove(1);
+          }
+          
+          // Add agent options
+          agents.forEach(agent => {
+            const option = document.createElement('option');
+            option.value = agent.id;
+            option.textContent = `${agent.instance_id} (${agent.agent_type})`;
+            delegateeSelect.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading agents:', error);
+        showAlert('Error loading agents');
+      }
+      
+      // Revoke Delegation Button
+      const revokeDelegationBtn = document.getElementById('revoke-delegation-btn');
+      if (revokeDelegationBtn) {
+        revokeDelegationBtn.addEventListener('click', async () => {
+          const delegationId = revokeDelegationBtn.dataset.delegationId;
+          
+          if (confirm('Are you sure you want to revoke this delegation?')) {
+            try {
+              await revokeDelegation(delegationId);
+              closeModal('delegation-details-modal');
+              getDelegations(); // Refresh the list
+            } catch (error) {
+              showAlert(error.message);
+            }
+          }
+        });
+      }
+    });
+    
+    // Function to show delegation details
+    async function showDelegationDetails(delegationId) {
+      try {
+        // Get delegation details
+        const response = await apiRequest(`/delegation/${delegationId}`);
+        const delegation = response.delegation;
+        
+        // Update details content
+        const detailsContent = document.getElementById('delegation-details-content');
+        detailsContent.innerHTML = `
+          <div class="delegation-details">
+            <p><strong>ID:</strong> ${delegation.id}</p>
+            <p><strong>Delegator:</strong> ${delegation.delegator_id} (${delegation.delegator_type})</p>
+            <p><strong>Delegatee:</strong> ${delegation.delegatee_id} (${delegation.delegatee_type})</p>
+            <p><strong>Scope:</strong> ${delegation.scope}</p>
+            <p><strong>Purpose:</strong> ${delegation.purpose || 'N/A'}</p>
+            <p><strong>Created:</strong> ${new Date(delegation.delegated_at).toLocaleString()}</p>
+            <p><strong>Expires:</strong> ${delegation.expires_at ? new Date(delegation.expires_at).toLocaleString() : 'Never'}</p>
+            <p><strong>Status:</strong> ${delegation.is_active ? '<span class="status-verified">Active</span>' : '<span class="status-unverified">Inactive</span>'}</p>
+            <p><strong>Constraints:</strong></p>
+            <pre>${JSON.stringify(delegation.constraints, null, 2) || 'None'}</pre>
+          </div>
+        `;
+        
+        // Get delegation chain
+        try {
+          const chainResponse = await apiRequest('/delegation/chain');
+          const chain = chainResponse.delegation_chain;
+          
+          const chainContent = document.getElementById('delegation-chain-content');
+          
+          if (chain.length === 0) {
+            chainContent.innerHTML = '<p>No delegation chain found.</p>';
+          } else {
+            let chainHtml = '<div class="delegation-chain">';
+            
+            chain.forEach((step, index) => {
+              chainHtml += `
+                <div class="delegation-step">
+                  <div class="step-number">${index + 1}</div>
+                  <div class="step-content">
+                    <p><strong>From:</strong> ${step.sub}</p>
+                    <p><strong>To:</strong> ${step.aud}</p>
+                    <p><strong>At:</strong> ${new Date(step.delegated_at * 1000).toLocaleString()}</p>
+                    <p><strong>Scope:</strong> ${step.scope}</p>
+                    <p><strong>Purpose:</strong> ${step.purpose || 'N/A'}</p>
+                  </div>
+                </div>
+              `;
+              
+              // Add connector line if not the last step
+              if (index < chain.length - 1) {
+                chainHtml += '<div class="chain-connector"><i class="fas fa-arrow-down"></i></div>';
+              }
+            });
+            
+            chainHtml += '</div>';
+            chainContent.innerHTML = chainHtml;
+          }
+        } catch (error) {
+          console.error('Error loading delegation chain:', error);
+          document.getElementById('delegation-chain-content').innerHTML = '<p>Error loading delegation chain.</p>';
+        }
+        
+        // Set delegation ID for revoke button
+        document.getElementById('revoke-delegation-btn').dataset.delegationId = delegationId;
+        
+        // Show the modal
+        openModal('delegation-details-modal');
+      } catch (error) {
+        showAlert(error.message);
+      }
+    }
+  </script>
+  
+  <style>
+    /* Additional styles for delegation chain visualization */
+    .delegation-chain {
+      margin: 1rem 0;
+    }
+    
+    .delegation-step {
+      display: flex;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      background-color: #f8f9fa;
+    }
+    
+    .step-number {
+      width: 30px;
+      height: 30px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 1rem;
+    }
+    
+    .step-content {
+      flex: 1;
+    }
+    
+    .chain-connector {
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem 0;
+      color: var(--gray-color);
+    }
+  </style>
+</body>
+</html>

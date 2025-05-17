@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Agents - MCP Auth Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">MCP<span>Auth</span></a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li class="nav-item"><a href="agents.html" class="nav-link active">Agents</a></li>
+        <li class="nav-item"><a href="delegations.html" class="nav-link">Delegations</a></li>
+        <li class="nav-item"><a href="#" id="logout-btn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <section class="main-content">
+    <div class="container">
+      <div id="alert-container"></div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1>Manage Agents</h1>
+        <button class="btn btn-primary" onclick="openModal('create-agent-modal')">
+          <i class="fas fa-plus"></i> Create Agent
+        </button>
+      </div>
+      
+      <!-- Agents List -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Your Agents</h2>
+        </div>
+        <div class="card-body">
+          <div id="agents-list">
+            <p>Loading agents...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Agent Types Info -->
+      <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+          <h2 class="card-title">Agent Types</h2>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Use Cases</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>assistant</strong></td>
+                <td>General-purpose assistant agent</td>
+                <td>Customer support, personal assistance, information retrieval</td>
+              </tr>
+              <tr>
+                <td><strong>retrieval</strong></td>
+                <td>Agent specialized in information retrieval</td>
+                <td>Document search, knowledge base access, data mining</td>
+              </tr>
+              <tr>
+                <td><strong>coding</strong></td>
+                <td>Agent specialized in code generation or analysis</td>
+                <td>Software development, code review, debugging</td>
+              </tr>
+              <tr>
+                <td><strong>domain_specific</strong></td>
+                <td>Agent specialized for a particular domain</td>
+                <td>Healthcare, finance, legal, education</td>
+              </tr>
+              <tr>
+                <td><strong>autonomous</strong></td>
+                <td>Agent with high degree of autonomy</td>
+                <td>Workflow automation, scheduling, monitoring</td>
+              </tr>
+              <tr>
+                <td><strong>supervised</strong></td>
+                <td>Agent requiring human supervision for key actions</td>
+                <td>Content moderation, critical decision making</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Create Agent Modal -->
+  <div id="create-agent-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('create-agent-modal')">&times;</span>
+      <h2>Create New Agent</h2>
+      
+      <form id="create-agent-form">
+        <div class="form-group">
+          <label for="instance-id" class="form-label">Instance ID</label>
+          <input type="text" id="instance-id" class="form-control" required>
+          <small>A unique identifier for this agent instance</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="agent-type" class="form-label">Agent Type</label>
+          <select id="agent-type" class="form-control" required>
+            <option value="">Select Agent Type</option>
+            <option value="assistant">Assistant</option>
+            <option value="retrieval">Retrieval</option>
+            <option value="coding">Coding</option>
+            <option value="domain_specific">Domain Specific</option>
+            <option value="autonomous">Autonomous</option>
+            <option value="supervised">Supervised</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="agent-model" class="form-label">Agent Model</label>
+          <input type="text" id="agent-model" class="form-control" required>
+          <small>e.g., "gpt-4", "claude-3-opus", "gemini-pro"</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="agent-version" class="form-label">Agent Version</label>
+          <input type="text" id="agent-version" class="form-control">
+          <small>Version identifier of the agent model</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="agent-provider" class="form-label">Agent Provider</label>
+          <input type="text" id="agent-provider" class="form-control" required>
+          <small>e.g., "openai.com", "anthropic.com", "google.com"</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="capabilities" class="form-label">Capabilities</label>
+          <input type="text" id="capabilities" class="form-control">
+          <small>Comma-separated list of capabilities (e.g., "text_generation,code_generation")</small>
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary btn-block">Create Agent</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Agent Details Modal -->
+  <div id="agent-details-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('agent-details-modal')">&times;</span>
+      <h2>Agent Details</h2>
+      
+      <div id="agent-details-content">
+        <!-- Will be populated dynamically -->
+      </div>
+      
+      <div style="margin-top: 1.5rem;">
+        <h3>Generate Token</h3>
+        <form id="generate-token-form">
+          <input type="hidden" id="agent-id-for-token">
+          
+          <div class="form-group">
+            <label for="token-scope" class="form-label">Scope</label>
+            <input type="text" id="token-scope" class="form-control" required>
+            <small>Space-separated list of scopes (e.g., "email profile")</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="token-purpose" class="form-label">Purpose</label>
+            <input type="text" id="token-purpose" class="form-control">
+            <small>Description of the purpose/intent for which authority is delegated</small>
+          </div>
+          
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Generate Token</button>
+          </div>
+        </form>
+        
+        <div id="token-result" style="display: none; margin-top: 1rem;">
+          <h4>Generated Token</h4>
+          <div class="form-group">
+            <label for="access-token" class="form-label">Access Token</label>
+            <textarea id="access-token" class="form-control" rows="3" readonly></textarea>
+          </div>
+          
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm" onclick="copyToClipboard('access-token')">Copy Token</button>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem;">
+        <h3>Verify Attestation</h3>
+        <form id="verify-attestation-form">
+          <input type="hidden" id="agent-id-for-attestation">
+          
+          <div class="form-group">
+            <label for="attestation-format" class="form-label">Format</label>
+            <select id="attestation-format" class="form-control" required>
+              <option value="">Select Format</option>
+              <option value="urn:ietf:params:oauth:token-type:eat">EAT Token</option>
+              <option value="TPM2-Quote">TPM2 Quote</option>
+              <option value="SGX-Quote">SGX Quote</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="attestation-token" class="form-label">Attestation Token</label>
+            <textarea id="attestation-token" class="form-control" rows="3" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Verify Attestation</button>
+          </div>
+        </form>
+        
+        <div id="attestation-result" style="display: none; margin-top: 1rem;">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2025 MCP Auth Platform. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+        <li><a href="#" class="footer-link">Terms of Service</a></li>
+        <li><a href="#" class="footer-link">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/main.js"></script>
+  <script src="js/agents.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is logged in
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Generate Token Form
+      const generateTokenForm = document.getElementById('generate-token-form');
+      if (generateTokenForm) {
+        generateTokenForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const agentId = document.getElementById('agent-id-for-token').value;
+          const scope = document.getElementById('token-scope').value;
+          const purpose = document.getElementById('token-purpose').value;
+          
+          try {
+            const tokenData = await generateAgentToken(agentId, {
+              scope,
+              purpose
+            });
+            
+            // Display token
+            document.getElementById('access-token').value = tokenData.access_token;
+            document.getElementById('token-result').style.display = 'block';
+          } catch (error) {
+            showAlert(error.message);
+          }
+        });
+      }
+      
+      // Verify Attestation Form
+      const verifyAttestationForm = document.getElementById('verify-attestation-form');
+      if (verifyAttestationForm) {
+        verifyAttestationForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const agentId = document.getElementById('agent-id-for-attestation').value;
+          const format = document.getElementById('attestation-format').value;
+          const token = document.getElementById('attestation-token').value;
+          
+          try {
+            const attestationData = await verifyAttestation({
+              agent_id: agentId,
+              attestation: {
+                format,
+                token
+              }
+            });
+            
+            // Display result
+            const resultDiv = document.getElementById('attestation-result');
+            resultDiv.style.display = 'block';
+            
+            resultDiv.innerHTML = `
+              <div class="alert ${attestationData.verified ? 'alert-success' : 'alert-danger'}">
+                <p><strong>Verification Result:</strong> ${attestationData.verified ? 'Verified' : 'Not Verified'}</p>
+                <p><strong>Agent:</strong> ${attestationData.agent_provider} / ${attestationData.agent_model}</p>
+                <p><strong>Timestamp:</strong> ${attestationData.verification_timestamp}</p>
+              </div>
+            `;
+            
+            // Refresh agent list to show updated trust level
+            getAgents();
+          } catch (error) {
+            showAlert(error.message);
+          }
+        });
+      }
+    });
+    
+    // Function to show agent details
+    async function showAgentDetails(agentId) {
+      try {
+        const agent = await getAgentDetails(agentId);
+        
+        const detailsContent = document.getElementById('agent-details-content');
+        detailsContent.innerHTML = `
+          <div class="agent-details">
+            <p><strong>Instance ID:</strong> ${agent.instance_id}</p>
+            <p><strong>Type:</strong> ${agent.agent_type}</p>
+            <p><strong>Model:</strong> ${agent.agent_model}</p>
+            <p><strong>Version:</strong> ${agent.agent_version || 'N/A'}</p>
+            <p><strong>Provider:</strong> ${agent.agent_provider}</p>
+            <p><strong>Trust Level:</strong> <span class="agent-status status-${agent.trust_level}">${agent.trust_level}</span></p>
+            <p><strong>Capabilities:</strong> ${agent.capabilities.length > 0 ? agent.capabilities.join(', ') : 'None'}</p>
+            <p><strong>Created:</strong> ${new Date(agent.created_at).toLocaleString()}</p>
+          </div>
+        `;
+        
+        // Set agent ID for token generation and attestation verification
+        document.getElementById('agent-id-for-token').value = agentId;
+        document.getElementById('agent-id-for-attestation').value = agentId;
+        
+        // Reset forms
+        document.getElementById('generate-token-form').reset();
+        document.getElementById('verify-attestation-form').reset();
+        document.getElementById('token-result').style.display = 'none';
+        document.getElementById('attestation-result').style.display = 'none';
+        
+        openModal('agent-details-modal');
+      } catch (error) {
+        showAlert(error.message);
+      }
+    }
+    
+    // Function to copy text to clipboard
+    function copyToClipboard(elementId) {
+      const element = document.getElementById(elementId);
+      element.select();
+      document.execCommand('copy');
+      showAlert('Copied to clipboard!', 'success');
+    }
+  </script>
+</body>
+</html>
