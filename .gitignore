@@ -32,6 +32,13 @@ ENV/
 # Database
 *.db
 *.sqlite3
+*.sqlite
+**/*.db
+**/*.sqlite3
+**/*.sqlite
+backend/*.db
+backend/instance/*.db
+instance/*.db
 
 # IDE
 .idea/
@@ -70,3 +77,4 @@ coverage.xml
 
 # db
 mcp_auth_dev.db
+**/mcp_auth_dev.db

@@ -1,7 +1,7 @@
 // MCP Auth Platform - Main JavaScript
 
-// API Base URL - Change this to your backend URL in production
-const API_BASE_URL = 'http://localhost:5000/api';
+// API Base URL - Pointing to the backend server
+const API_BASE_URL = 'http://localhost:8001/api';
 
 // Debug mode - set to true to enable console logging
 const DEBUG = true;
@@ -149,9 +149,14 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
       // Fall back to fetch if XHR fails
       const fetchOptions = {
         method,
-        headers,
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         credentials: 'include',
-        mode: 'cors'
+        mode: 'cors',
+        cache: 'no-cache'
       };
       
       // Only add body for non-GET requests
@@ -221,13 +226,32 @@ async function login(username, password) {
     debugLog('Attempting login with:', { username });
     showAlert('Logging in...', 'info');
     
-    // Use our improved apiRequest function
-    const data = await apiRequest('/auth/login', 'POST', { username, password });
-    debugLog('Login successful, received tokens:', data);
+    // Make a direct fetch request to handle CORS properly
+    const response = await fetch('http://localhost:8001/api/auth/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ username, password })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Login failed');
+    }
+    
+    const data = await response.json();
+    debugLog('Login successful, received data:', data);
     
     // Store tokens and user info
-    localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('refresh_token', data.refresh_token);
+    if (data.access_token) {
+      localStorage.setItem('access_token', data.access_token);
+    }
+    if (data.refresh_token) {
+      localStorage.setItem('refresh_token', data.refresh_token);
+    }
     if (data.user_id) {
       localStorage.setItem('user_id', data.user_id);
     }
@@ -251,7 +275,8 @@ async function login(username, password) {
     return data;
   } catch (error) {
     debugLog('Login error:', error);
-    showAlert(`Login failed: ${error.message}`, 'danger');
+    const errorMessage = error.message || 'An error occurred during login';
+    showAlert(`Login failed: ${errorMessage}`, 'danger');
     throw error;
   }
 }
