@@ -2,6 +2,8 @@
 
 An Okta-like authentication and authorization system for MCP servers that implements OpenID Connect for Agents (OIDC-A) 1.0 specification.
 
+OIDC-A : https://subramanya.ai/2025/04/28/oidc-a-proposal/
+
 ## Components
 
 1. **Backend Service** - Python-based authentication and authorization service
