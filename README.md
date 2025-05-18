@@ -5,7 +5,7 @@ An Okta-like authentication and authorization system for MCP servers that implem
 ## Components
 
 1. **Backend Service** - Python-based authentication and authorization service
-2. 3. **SDK** - Python client library for MCP server integration
+2.  **SDK** - Python client library for MCP server integration
 
 ## Getting Started
 
@@ -46,7 +46,6 @@ python app.py
 ## Project Structure
 
 - `/backend` - Python-based authentication and authorization service
-- `/frontend` - HTML, CSS, and JavaScript user management interface
 - `/sdk` - Python client library for MCP server integration
 - `/docs` - Documentation
 - `/sql` - SQL database scripts and schemas
