@@ -1,0 +1,77 @@
+"use client";
+
+import { Fragment, PropsWithChildren, useState } from "react";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "ui/popover";
+
+interface SelectModelProps {
+  onSelect: (model: string) => void;
+  align?: "start" | "end";
+  providers: {
+    provider: string;
+    models: { name: string; isToolCallUnsupported: boolean }[];
+  }[];
+  model: string;
+}
+
+export const SelectModel = (props: PropsWithChildren<SelectModelProps>) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>{props.children}</PopoverTrigger>
+      <PopoverContent className="p-0 w-[280px]" align={props.align || "end"}>
+        <Command
+          className="rounded-lg relative shadow-md h-80"
+          value={props.model}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <CommandInput placeholder="search model..." />
+          <CommandList className="p-2">
+            <CommandEmpty>No results found.</CommandEmpty>
+            {props.providers.map((provider, i) => (
+              <Fragment key={provider.provider}>
+                <CommandGroup
+                  heading={provider.provider}
+                  className="pb-4"
+                  onWheel={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  {provider.models.map((model) => (
+                    <CommandItem
+                      key={model.name}
+                      className="cursor-pointer"
+                      onSelect={() => {
+                        props.onSelect(model.name);
+                        setOpen(false);
+                      }}
+                      value={model.name}
+                    >
+                      <span className="px-2">{model.name}</span>
+                      {model.isToolCallUnsupported && (
+                        <div className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+                          No tools
+                        </div>
+                      )}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                {i < props.providers.length - 1 && <CommandSeparator />}
+              </Fragment>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
